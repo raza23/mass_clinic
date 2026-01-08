@@ -1,0 +1,68 @@
+We are building an eligibility checker for potential patients to come to a non-profit healthcare clinic to obtain free healthcare. 
+
+The application will ask the patients to share their own personal information. That information being the name and age of the respective patient, the number of people in their household, their income, and their reason why they are coming to the clinic for assistance. 
+
+Depending on the information given from the patienct the application will be either multiple pages  if they meet the eligibilty requirements from the first page or just 2 pages if they do not meet the elibilty requirements.
+
+
+
+
+The eligibility requirements are that the patience must be over 18 and also their monthly income must be under the amount based on their household size. 
+
+Household Size: Monthly (200%)
+1: $2,430
+2:$3,287
+3:$4,143
+4:$5,000
+5:$5,857
+6:$6,713
+7:$7,570
+8:$8,427
+9:$9,283
+10: $10,140
+
+
+We will be using an LLM library gpt-4.1-mini to power this process
+
+I will supply you with more infomration shortyl.
+
+For now, just CONFIRM your understanding of the process. 
+
+
+
+
+PROMPT 2
+
+Let us begin by creating the frontend.  I will supply you the logo of the clinic and also
+
+
+I will the css of how I want the application to look as we navigate through pages. 
+
+/* Group 1 */
+
+position: absolute;
+width: 7405px;
+height: 11768px;
+
+
+
+/* Rectangle 2 */
+
+position: absolute;
+width: 7405px;
+height: 11768px;
+
+background: #0E1238;
+
+
+PROMPTS 3 
+
+Now I want to incorporate a connection to OpenAi and we would like to use gpt-4.1-mini
+
+I want to incoprate this system prompt into my application, such that the user's inpurts will supplied into the LLM with this system prompt
+
+##SYSTEM PROMPT##
+Play the role of an admin of a free healthcare clinic. The {{patient}} will provide you with their name and age as well as the {{total}} amount  people in their household(under the age of 18), and their underlying {{issue}}. You will initially check if they’re eligible based on their {{monthly_income}}. Based on the clinics guidelines you will determine if they are eligible . If they are eligible you you will obtain more information about the patient and schedule them an appointment. 
+
+
+

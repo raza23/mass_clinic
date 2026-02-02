@@ -5,8 +5,19 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 interface PatientData {
-  name: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  name?: string;
   age: string;
+  dateOfBirth?: string;
+  sex?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  ethnicity?: string;
+  race?: string;
+  language?: string;
   householdSize: string;
   monthlyIncome: string;
 }
@@ -151,7 +162,7 @@ export default function AppointmentPage() {
               </p>
               <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
                 <div>
-                  <span className="font-medium">Name:</span> {patientData.name}
+                  <span className="font-medium">Name:</span> {patientData.fullName || patientData.name || `${patientData.firstName} ${patientData.lastName}`}
                 </div>
                 <div>
                   <span className="font-medium">Age:</span> {patientData.age} years

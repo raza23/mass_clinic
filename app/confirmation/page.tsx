@@ -5,8 +5,19 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 interface ApplicationData {
-  name: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  name?: string;
   age: string;
+  dateOfBirth?: string;
+  sex?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  ethnicity?: string;
+  race?: string;
+  language?: string;
   householdSize: string;
   monthlyIncome: string;
   service?: string;
@@ -21,6 +32,7 @@ interface ApplicationData {
 export default function ConfirmationPage() {
   const router = useRouter();
   const [applicationData, setApplicationData] = useState<ApplicationData | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     // Get complete application data from sessionStorage
@@ -44,9 +56,61 @@ export default function ConfirmationPage() {
     // Clear session storage
     sessionStorage.removeItem('patientData');
     sessionStorage.removeItem('applicationData');
+    sessionStorage.removeItem('selectedService');
+    sessionStorage.removeItem('symptomsData');
     
     // Navigate back to home
     router.push('/');
+  };
+
+  const handleDownloadPDF = async () => {
+    setIsDownloading(true);
+    
+    try {
+      // Get patient data from session storage
+      const patientDataStr = sessionStorage.getItem('patientData');
+      const patientData = patientDataStr ? JSON.parse(patientDataStr) : {};
+      
+      // Combine all data for PDF generation
+      const pdfData = {
+        ...patientData,
+        ...applicationData,
+      };
+      
+      // Call the PDF generation API
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(pdfData),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+      
+      // Get the PDF blob
+      const blob = await response.blob();
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `patient-application-${applicationData.name || 'form'}-${Date.now()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      alert('Failed to download PDF. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   if (!applicationData) {
@@ -86,7 +150,7 @@ export default function ConfirmationPage() {
                 Application Submitted Successfully!
               </h1>
               <p className="text-gray-600 text-lg">
-                Thank you, {applicationData.name}
+                Thank you, {applicationData.fullName || applicationData.name || `${applicationData.firstName} ${applicationData.lastName}`}
               </p>
             </div>
             
@@ -98,12 +162,30 @@ export default function ConfirmationPage() {
               <div className="space-y-2 text-sm text-gray-600">
                 <div className="flex justify-between">
                   <span className="font-medium">Name:</span>
-                  <span>{applicationData.name}</span>
+                  <span>{applicationData.fullName || applicationData.name || `${applicationData.firstName} ${applicationData.lastName}`}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="font-medium">Age:</span>
                   <span>{applicationData.age} years</span>
                 </div>
+                {applicationData.dateOfBirth && (
+                  <div className="flex justify-between">
+                    <span className="font-medium">Date of Birth:</span>
+                    <span>{new Date(applicationData.dateOfBirth).toLocaleDateString()}</span>
+                  </div>
+                )}
+                {applicationData.phone && (
+                  <div className="flex justify-between">
+                    <span className="font-medium">Phone:</span>
+                    <span>{applicationData.phone}</span>
+                  </div>
+                )}
+                {applicationData.email && (
+                  <div className="flex justify-between">
+                    <span className="font-medium">Email:</span>
+                    <span>{applicationData.email}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="font-medium">Household Size:</span>
                   <span>{applicationData.householdSize} people</span>
@@ -200,10 +282,34 @@ export default function ConfirmationPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-6">
+            <div className="pt-6 space-y-4">
+              {/* Download PDF Button - Only show for doctor appointments */}
+              {applicationData.service === 'doctor' && (
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={isDownloading}
+                  className="w-full bg-[#D4AF37] hover:bg-[#c49b2e] text-white font-bold py-4 px-8 rounded-lg transition-colors shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+                >
+                  {isDownloading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Generating PDF...
+                    </>
+                  ) : (
+                    <>
+                      📄 Download Patient Application Form (PDF)
+                    </>
+                  )}
+                </button>
+              )}
+              
+              {/* Submit Another Application */}
               <button
                 onClick={handleNewApplication}
-                className="bg-[#0E1238] hover:bg-[#1a2050] text-white font-bold py-4 px-8 rounded-lg transition-colors shadow-lg"
+                className="w-full bg-[#0E1238] hover:bg-[#1a2050] text-white font-bold py-4 px-8 rounded-lg transition-colors shadow-lg"
               >
                 Submit Another Application
               </button>

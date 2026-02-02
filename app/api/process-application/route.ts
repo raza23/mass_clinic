@@ -23,10 +23,13 @@ const INCOME_THRESHOLDS: { [key: number]: number } = {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, age, householdSize, monthlyIncome, reason } = body;
+    const { name, fullName, firstName, lastName, age, householdSize, monthlyIncome, reason } = body;
+
+    // Get patient name (support both old and new format)
+    const patientName = fullName || name || `${firstName} ${lastName}`;
 
     // Validate required fields
-    if (!name || !age || !householdSize || !monthlyIncome || !reason) {
+    if (!patientName || !age || !householdSize || !monthlyIncome || !reason) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -56,7 +59,7 @@ export async function POST(request: NextRequest) {
     const systemPrompt = `Play the role of an admin of a free healthcare clinic. The patient will provide you with their name and age as well as the total amount of people in their household (under the age of 18), and their underlying issue. You will initially check if they're eligible based on their monthly income. Based on the clinic's guidelines you will determine if they are eligible. If they are eligible you will obtain more information about the patient and schedule them an appointment.
 
 Patient Information:
-- Name: ${name}
+- Name: ${patientName}
 - Age: ${age} years old
 - Household Size: ${householdSize} people
 - Monthly Income: $${monthlyIncomeNum.toLocaleString()}
@@ -71,7 +74,7 @@ The patient has already been confirmed as eligible. Your role is to:
 5. Ask any clarifying questions if needed about their medical concern`;
 
     // User message with the patient's reason
-    const userMessage = `My name is ${name}. I am ${age} years old with ${householdSize} people in my household. My monthly income is $${monthlyIncomeNum.toLocaleString()}. 
+    const userMessage = `My name is ${patientName}. I am ${age} years old with ${householdSize} people in my household. My monthly income is $${monthlyIncomeNum.toLocaleString()}. 
 
 Here is my medical concern and reason for seeking healthcare assistance:
 
@@ -101,7 +104,8 @@ ${reason}`;
       eligible: true,
       aiResponse,
       patientData: {
-        name,
+        name: patientName,
+        fullName: patientName,
         age,
         householdSize,
         monthlyIncome,
@@ -110,19 +114,20 @@ ${reason}`;
       timestamp: new Date().toISOString(),
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error processing application:', error);
     
     // Handle OpenAI API errors
-    if (error?.status === 401) {
+    if (error && typeof error === 'object' && 'status' in error && error.status === 401) {
       return NextResponse.json(
         { error: 'Invalid OpenAI API key. Please check your configuration.' },
         { status: 500 }
       );
     }
 
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: 'Failed to process application', details: error?.message },
+      { error: 'Failed to process application', details: errorMessage },
       { status: 500 }
     );
   }

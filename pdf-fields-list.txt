@@ -1,0 +1,289 @@
+PDF FORM FIELDS ANALYSIS
+================================================================================
+
+Total Fields Found: 94
+
+FIELD LIST (for mapping to frontend data):
+--------------------------------------------------------------------------------
+
+1. Field Name: "Patients_Name"
+   Type: PDFTextField
+
+2. Field Name: "TODAY"
+   Type: PDFTextField
+
+3. Field Name: "PATIENTDOB"
+   Type: PDFTextField
+
+4. Field Name: "PATIENTPHONENUMBERS"
+   Type: PDFTextField
+
+5. Field Name: "PATIENTADDRESSBLOCK"
+   Type: PDFTextField
+
+6. Field Name: "PATIENTSEX"
+   Type: PDFCheckBox
+
+7. Field Name: "Check Box1"
+   Type: PDFCheckBox
+
+8. Field Name: "PATIENTLASTNAME"
+   Type: PDFTextField
+
+9. Field Name: "PATIENTFIRSTNAME"
+   Type: PDFTextField
+
+10. Field Name: "PATIENTETHNICITY"
+   Type: PDFTextField
+
+11. Field Name: "PATIENTDEPARTMENTNAME"
+   Type: PDFTextField
+
+12. Field Name: "PATIENTLANGchar"
+   Type: PDFTextField
+
+13. Field Name: "PATIENTRACE"
+   Type: PDFTextField
+
+14. Field Name: "ptEmail"
+   Type: PDFTextField
+
+15. Field Name: "Text2"
+   Type: PDFTextField
+
+16. Field Name: "CLINICALSECTION_ENCOUNTERREASON"
+   Type: PDFTextField
+
+17. Field Name: "Check Box1a"
+   Type: PDFCheckBox
+
+18. Field Name: "Check Box1b"
+   Type: PDFCheckBox
+
+19. Field Name: "MASS_Txt"
+   Type: PDFTextField
+
+20. Field Name: "PATIENTDEPARTMENTNAMEc"
+   Type: PDFTextField
+
+21. Field Name: "FormNumber1"
+   Type: PDFTextField
+
+22. Field Name: "1032Exp"
+   Type: PDFTextField
+
+23. Field Name: "Text1"
+   Type: PDFTextField
+
+24. Field Name: "Check Box3"
+   Type: PDFCheckBox
+
+25. Field Name: "Check Box4"
+   Type: PDFCheckBox
+
+26. Field Name: "Employer1"
+   Type: PDFTextField
+
+27. Field Name: "EarnedGross1"
+   Type: PDFTextField
+
+28. Field Name: "unEarnedGross1"
+   Type: PDFTextField
+
+29. Field Name: "Spouse Name"
+   Type: PDFTextField
+
+30. Field Name: "Child1 Name"
+   Type: PDFTextField
+
+31. Field Name: "Child2 Name"
+   Type: PDFTextField
+
+32. Field Name: "Child3Name"
+   Type: PDFTextField
+
+33. Field Name: "Child4Name"
+   Type: PDFTextField
+
+34. Field Name: "SpouseDOB"
+   Type: PDFTextField
+
+35. Field Name: "Child1DOB"
+   Type: PDFTextField
+
+36. Field Name: "Child2DOB"
+   Type: PDFTextField
+
+37. Field Name: "Employer2"
+   Type: PDFTextField
+
+38. Field Name: "Employer3"
+   Type: PDFTextField
+
+39. Field Name: "Employer4"
+   Type: PDFTextField
+
+40. Field Name: "Employer5"
+   Type: PDFTextField
+
+41. Field Name: "Employer6"
+   Type: PDFTextField
+
+42. Field Name: "EarnedGross2"
+   Type: PDFTextField
+
+43. Field Name: "EarnedGross3"
+   Type: PDFTextField
+
+44. Field Name: "EarnedGross4"
+   Type: PDFTextField
+
+45. Field Name: "EarnedGross5"
+   Type: PDFTextField
+
+46. Field Name: "EarnedGross6"
+   Type: PDFTextField
+
+47. Field Name: "Child3DOB"
+   Type: PDFTextField
+
+48. Field Name: "Child4DOB"
+   Type: PDFTextField
+
+49. Field Name: "unEarnedGross2"
+   Type: PDFTextField
+
+50. Field Name: "unEarnedGross3"
+   Type: PDFTextField
+
+51. Field Name: "unEarnedGross4"
+   Type: PDFTextField
+
+52. Field Name: "unEarnedGross5"
+   Type: PDFTextField
+
+53. Field Name: "unEarnedGross6"
+   Type: PDFTextField
+
+54. Field Name: "FamilySizeAdult"
+   Type: PDFTextField
+
+55. Field Name: "FamilySizeUnder18"
+   Type: PDFTextField
+
+56. Field Name: "FamilySize18-21"
+   Type: PDFTextField
+
+57. Field Name: "FamilySizeUnBorn"
+   Type: PDFTextField
+
+58. Field Name: "FamilySize"
+   Type: PDFTextField
+
+59. Field Name: "Total Gross"
+   Type: PDFTextField
+
+60. Field Name: "Step2"
+   Type: PDFTextField
+
+61. Field Name: "Step2a"
+   Type: PDFTextField
+
+62. Field Name: "Child Care"
+   Type: PDFTextField
+
+63. Field Name: "Child Support"
+   Type: PDFTextField
+
+64. Field Name: "Step5"
+   Type: PDFTextField
+
+65. Field Name: "Step3a"
+   Type: PDFTextField
+
+66. Field Name: "MedicationRow"
+   Type: PDFTextField
+
+67. Field Name: "AGE"
+   Type: PDFTextField
+
+68. Field Name: "AppointmentType"
+   Type: PDFTextField
+
+69. Field Name: "CCM_PATIENT"
+   Type: PDFTextField
+
+70. Field Name: "PHQ9"
+   Type: PDFTextField
+
+71. Field Name: "PHQ9SCORE"
+   Type: PDFTextField
+
+72. Field Name: "PHQ9DATE"
+   Type: PDFTextField
+
+73. Field Name: "PATIENTSSN"
+   Type: PDFTextField
+
+74. Field Name: "Check Box2"
+   Type: PDFCheckBox
+
+75. Field Name: "Check Box3G"
+   Type: PDFCheckBox
+
+76. Field Name: "Check Box2B"
+   Type: PDFCheckBox
+
+77. Field Name: "Check Box2C"
+   Type: PDFCheckBox
+
+78. Field Name: "Check Box2D"
+   Type: PDFCheckBox
+
+79. Field Name: "Check Box2E"
+   Type: PDFCheckBox
+
+80. Field Name: "Check Box2F"
+   Type: PDFCheckBox
+
+81. Field Name: "Check Box2G"
+   Type: PDFCheckBox
+
+82. Field Name: "Check Box2h"
+   Type: PDFCheckBox
+
+83. Field Name: "Check Box2i"
+   Type: PDFCheckBox
+
+84. Field Name: "Check Box2j"
+   Type: PDFCheckBox
+
+85. Field Name: "Check Box2k"
+   Type: PDFCheckBox
+
+86. Field Name: "Check Box2l"
+   Type: PDFCheckBox
+
+87. Field Name: "Check Box2m"
+   Type: PDFCheckBox
+
+88. Field Name: "Check Box3A"
+   Type: PDFCheckBox
+
+89. Field Name: "Check Box2U"
+   Type: PDFCheckBox
+
+90. Field Name: "Check Box2p"
+   Type: PDFCheckBox
+
+91. Field Name: "Check Box2Q"
+   Type: PDFCheckBox
+
+92. Field Name: "Check Box2R"
+   Type: PDFCheckBox
+
+93. Field Name: "Check Box2S"
+   Type: PDFCheckBox
+
+94. Field Name: "Check Box2t"
+   Type: PDFCheckBox

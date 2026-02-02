@@ -274,3 +274,4 @@ if (monthlyIncome >= threshold) {
 - ✅ sessionStorage for fast data access
 - ✅ No external API calls (yet)
 
+

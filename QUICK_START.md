@@ -75,3 +75,4 @@ Start helping patients access free healthcare! 💚
 
 **Questions?** Check the documentation files or review the error messages in the browser console (F12).
 
+

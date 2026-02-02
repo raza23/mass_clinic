@@ -242,8 +242,11 @@ export async function POST(request: NextRequest) {
     });
     console.log('✓ PDF saved with updateFieldAppearances option');
     
+    // Convert Uint8Array to Buffer for NextResponse
+    const buffer = Buffer.from(pdfBytes);
+    
     // Return the PDF as a downloadable file
-    return new NextResponse(pdfBytes, {
+    return new NextResponse(buffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

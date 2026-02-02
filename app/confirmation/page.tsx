@@ -97,7 +97,8 @@ export default function ConfirmationPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `patient-application-${applicationData.name || 'form'}-${Date.now()}.pdf`;
+      const fileName = applicationData?.lastName || applicationData?.name || 'form';
+      a.download = `patient-application-${fileName}-${Date.now()}.pdf`;
       document.body.appendChild(a);
       a.click();
       

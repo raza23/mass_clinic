@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import SignaturePadComponent from '../components/SignaturePad';
 
 interface PatientData {
   firstName?: string;
@@ -35,6 +36,8 @@ export default function AppointmentPage() {
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [signature, setSignature] = useState<string | null>(null);
+  const [showSignatureError, setShowSignatureError] = useState(false);
 
   useEffect(() => {
     // Get all stored data
@@ -67,8 +70,19 @@ export default function AppointmentPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if signature is required for doctor appointments
+    if (selectedService === 'doctor' && !signature) {
+      setShowSignatureError(true);
+      setError('Please sign the form before submitting.');
+      // Scroll to signature section
+      document.getElementById('signature-section')?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    
     setIsSubmitting(true);
     setError(null);
+    setShowSignatureError(false);
 
     try {
       // Prepare the complete data
@@ -79,6 +93,7 @@ export default function AppointmentPage() {
         symptoms: symptomsData?.symptoms || [],
         otherSymptom: symptomsData?.otherSymptom || null,
         reason,
+        signature, // Include signature
       };
 
       // Call the OpenAI API to process the appointment
@@ -105,12 +120,17 @@ export default function AppointmentPage() {
         throw new Error(data.error || 'Failed to process appointment');
       }
 
-      // Store complete data including AI response
+      // Store complete data including AI response and signature
       sessionStorage.setItem('applicationData', JSON.stringify({
         ...appointmentData,
         aiResponse: data.aiResponse,
         timestamp: data.timestamp,
       }));
+      
+      // Also store signature separately for easy access
+      if (signature) {
+        sessionStorage.setItem('patientSignature', signature);
+      }
 
       // Navigate to confirmation page
       router.push('/confirmation');
@@ -233,6 +253,62 @@ export default function AppointmentPage() {
                   <li>All services are provided free of charge to eligible patients</li>
                 </ul>
               </div>
+
+              {/* Signature Section - Only for doctor appointments */}
+              {selectedService === 'doctor' && (
+                <div id="signature-section" className={`bg-gray-50 p-6 rounded-lg border-2 ${showSignatureError ? 'border-red-500' : 'border-gray-200'}`}>
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                      📝 Patient Signature
+                      <span className="ml-2 text-red-500">*</span>
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      By signing below, you certify that the information provided is accurate and you agree to the terms of service.
+                    </p>
+                  </div>
+                  
+                  {signature ? (
+                    <div className="space-y-3">
+                      <div className="border-2 border-green-500 rounded-lg p-4 bg-white">
+                        <img src={signature} alt="Patient Signature" className="max-h-40 mx-auto" />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-green-600 flex items-center">
+                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Signature captured
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setSignature(null)}
+                          className="text-sm text-[#D4AF37] hover:text-[#B8941F] font-medium"
+                        >
+                          Clear & Re-sign
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {showSignatureError && (
+                        <p className="text-sm text-red-600 flex items-center">
+                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Signature is required before submitting
+                        </p>
+                      )}
+                      <SignaturePadComponent
+                        onSave={(sig) => {
+                          setSignature(sig);
+                          setShowSignatureError(false);
+                        }}
+                        onClear={() => setSignature(null)}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Navigation Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">

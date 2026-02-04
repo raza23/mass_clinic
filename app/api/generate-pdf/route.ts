@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, rgb } from 'pdf-lib';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -13,12 +13,10 @@ export async function POST(request: NextRequest) {
     
     // Load the PDF
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
-    
-    // Get the form
     const form = pdfDoc.getForm();
     
     // Helper function to safely set text field
-    const setTextField = (fieldName: string, value: string, options?: { multiline?: boolean; fontSize?: number }) => {
+    const setTextField = (fieldName: string, value: string, options?: { multiline?: boolean }) => {
       try {
         const field = form.getTextField(fieldName);
         
@@ -27,14 +25,10 @@ export async function POST(request: NextRequest) {
           field.enableMultiline();
         }
         
-        // Note: Some PDF fields may not support setFontSize() 
-        // We'll set text without font size to ensure it displays
-        // The field will use its default font size
-        
         // Set text
         field.setText(value || '');
-      } catch (error) {
-        console.log(`Field "${fieldName}" not found or error setting value`, error);
+      } catch {
+        console.log(`Field "${fieldName}" not found or error setting value`);
       }
     };
     
@@ -101,9 +95,7 @@ export async function POST(request: NextRequest) {
         console.log('Available gender options:', options);
         
         // Set the radio button based on gender
-        // Common radio button values are 'Male'/'Female' or 'M'/'F'
         if (data.sex.toLowerCase() === 'male') {
-          // Try different possible values
           if (options.includes('Male')) {
             sexRadioGroup.select('Male');
             console.log('✓ Selected "Male" radio button');
@@ -114,12 +106,10 @@ export async function POST(request: NextRequest) {
             sexRadioGroup.select('male');
             console.log('✓ Selected "male" radio button');
           } else if (options.length > 0) {
-            // Select first option (likely Male)
             sexRadioGroup.select(options[0]);
             console.log(`✓ Selected first option: "${options[0]}"`);
           }
         } else if (data.sex.toLowerCase() === 'female') {
-          // Try different possible values
           if (options.includes('Female')) {
             sexRadioGroup.select('Female');
             console.log('✓ Selected "Female" radio button');
@@ -130,7 +120,6 @@ export async function POST(request: NextRequest) {
             sexRadioGroup.select('female');
             console.log('✓ Selected "female" radio button');
           } else if (options.length > 1) {
-            // Select second option (likely Female)
             sexRadioGroup.select(options[1]);
             console.log(`✓ Selected second option: "${options[1]}"`);
           }
@@ -216,15 +205,84 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    // NOTE: AppointmentType field is not filled to avoid overwriting the main concern
-    // The service type is already captured in the main concern text above
-    
     // NOTE: Other Page 3 fields (vitals, medications, PHQ-9 scores, etc.) are intentionally left blank
     // These will be filled out by the doctor during the actual patient visit
     
     // Clinic name
     setTextField('MASS_Txt', 'Muslim American Social Services');
     setTextField('PATIENTDEPARTMENTNAMEc', 'Muslim American Social Services');
+    
+    // Add signatures if provided
+    if (data.signature) {
+      try {
+        // Extract base64 data from data URL
+        const base64Data = data.signature.split(',')[1];
+        const imageBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+        
+        // Embed the signature image
+        const signatureImage = await pdfDoc.embedPng(imageBytes);
+        
+        // Get all pages
+        const pages = pdfDoc.getPages();
+        const signatureDate = new Date().toLocaleDateString('en-US');
+        
+        // Define signature locations for all 8 signature spots
+        // Note: PDF coordinates start from bottom-left corner
+        // Y coordinates are measured from the bottom of the page
+        const signatureLocations = [
+          // Page 1 (index 0) - Section 4 - Bottom signature box (SIGNATURE OF CLIENT/PATIENT/PARENT OR GUARDIAN AND DATE)
+          { page: 0, x: 45, y: 60, width: 185, height: 40, label: 'SIGNATURE OF CLIENT/PATIENT' },
+          // Page 2 (index 1) - Top signature - "Signature of Patient or Legal Representative:"
+          { page: 1, x: 235, y: 155, width: 200, height: 40, label: 'Signature of Patient' },  
+          // Page 5 (index 4) - Consent section
+          { page: 4, x: 95, y: 446, width: 250, height: 35, label: 'Signature' },
+         
+          // Page 6 (index 5) - Patient responsibilities
+          { page: 5, x: 55, y: 133, width: 250, height: 35, label: 'Patient Signature' },
+          
+          // Page 7 (index 6) - Bill of Rights
+          { page: 7, x: 125, y: 115, width: 210, height: 35, label: 'Patient Signature' },
+          { page: 8, x: 85, y: 460, width: 250, height: 35, label: 'Signature' },
+        
+          { page: 10, x: 170, y: 110, width: 175, height: 35, label: 'Signature' },
+          { page: 12, x: 130, y: 113, width: 170, height: 35, label: 'Signature' },
+
+        ];
+        
+        // Apply signature to all locations
+        signatureLocations.forEach((location, index) => {
+          try {
+            if (location.page < pages.length) {
+              const page = pages[location.page];
+              
+              // Draw the signature image
+              page.drawImage(signatureImage, {
+                x: location.x,
+                y: location.y,
+                width: location.width,
+                height: location.height,
+              });
+              
+              // Draw a line underneath the signature
+              page.drawLine({
+                start: { x: location.x, y: location.y - 2 },
+                end: { x: location.x + location.width, y: location.y - 2 },
+                thickness: 1,
+                color: rgb(0, 0, 0),
+              });
+              
+              console.log(`✓ Signature ${index + 1} added to page ${location.page + 1} with line`);
+            }
+          } catch (error) {
+            console.log(`✗ Error adding signature ${index + 1}:`, error);
+          }
+        });
+        
+        console.log('✓ All signatures added to PDF');
+      } catch (error) {
+        console.log('✗ Error processing signature:', error);
+      }
+    }
     
     // Update field appearances (important for checkboxes to render properly)
     try {
